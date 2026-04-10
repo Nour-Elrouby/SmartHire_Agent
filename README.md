@@ -8,18 +8,6 @@
 > AI-powered recruitment agent that automatically reads resumes, scores candidates, ranks applicants, and answers job-related questions — built with FastAPI and Groq AI.
 
 ---
-## 📌 Table of Contents
-
-- [About the Project](#about-the-project)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [API Endpoints](#api-endpoints)
-- [How It Works](#how-it-works)
-- [Team](#team)
-
----
 
 ## 📖 About the Project
 
