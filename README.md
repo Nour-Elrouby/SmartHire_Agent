@@ -77,14 +77,14 @@ Instead of HR staff manually reading every resume, the SmartHire agent:
 └── .gitignore               ← Ignored files
 
 ---
-
+```
 ## 🚀 Getting Started
 
 ### Prerequisites
 - Python 3.10+
 - Groq API key (free at [https://console.groq.com](https://console.groq.com))
 
-```
+
 <!--### Installation
 
 **1. Clone the repository**
