@@ -1,7 +1,7 @@
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Security, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security.api_key import APIKeyHeader
-from agent import run_agent
+from Agent.agent import run_agent
 import shutil
 import os
 import json

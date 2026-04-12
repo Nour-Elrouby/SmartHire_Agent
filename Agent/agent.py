@@ -2,11 +2,14 @@ from groq import Groq
 from dotenv import load_dotenv
 import os
 import json
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from resume_reader import extract_text
-from scorer import score_resume
-from ranker import rank_candidates, get_top_candidates
-from chatbot import chat_with_bot, reset_conversation
+from Scorer.scorer import score_resume
+from Ranker.ranker import rank_candidates, get_top_candidates
+from Chatbot.chatbot import chat_with_bot, reset_conversation
 
 load_dotenv()
 
@@ -26,9 +29,9 @@ def run_agent(task: str, **kwargs) -> dict:
     print(f"\n[AGENT] Task received: {task}")
     memory = []
 
-    # Task1: score a resume
+    # task1 score a resume
     if task == "score":
-        file_path      = kwargs.get("file_path")
+        file_path       = kwargs.get("file_path")
         job_description = kwargs.get("job_description")
 
         if not file_path or not job_description:
@@ -46,15 +49,15 @@ def run_agent(task: str, **kwargs) -> dict:
         except Exception as e:
             return {"error": f"Could not read resume: {str(e)}"}
 
-        # OBSERVE
+        # observe
         print(f"[OBSERVE] Got {len(resume_text)} characters of text")
         memory.append({"step": "observe", "content": f"{len(resume_text)} chars extracted"})
 
-        # THINK again
+        # think again
         print("[THINK] Now I need to score the resume against the job description")
         memory.append({"step": "think", "content": "score resume vs job description"})
 
-        # ACT: call scorer
+        # act: call scorer
         print("[ACT] Calling scorer...")
         try:
             result = score_resume(resume_text, job_description)
@@ -74,7 +77,7 @@ def run_agent(task: str, **kwargs) -> dict:
             "memory": memory
         }
 
-    # task2: rank candidates 
+    #task2 rank candidates
     elif task == "rank":
         candidates = kwargs.get("candidates")
         top_n      = kwargs.get("top_n", 5)
@@ -82,20 +85,20 @@ def run_agent(task: str, **kwargs) -> dict:
         if not candidates:
             return {"error": "candidates list is required"}
 
-        # think
+        #think
         print("[THINK] I need to rank these candidates by score")
         memory.append({"step": "think", "content": "rank candidates"})
 
-        # act: call ranker
+        #act call ranker
         print("[ACT] Calling ranker...")
         ranked = get_top_candidates(candidates, top_n=top_n)
         memory.append({"step": "act", "tool": "ranker", "status": "success"})
 
-        # observe
+        #observe
         print(f"[OBSERVE] Ranked {len(ranked)} candidates")
         memory.append({"step": "observe", "content": f"{len(ranked)} candidates ranked"})
 
-        # done
+        #done
         print("[DONE] Task complete!")
         return {
             "task": "rank",
@@ -103,7 +106,7 @@ def run_agent(task: str, **kwargs) -> dict:
             "memory": memory
         }
 
-    #task3:chat
+    #task3 chat
     elif task == "chat":
         job_description = kwargs.get("job_description")
         question        = kwargs.get("question")
@@ -115,16 +118,16 @@ def run_agent(task: str, **kwargs) -> dict:
         print("[THINK] I need to answer a candidate question about the job")
         memory.append({"step": "think", "content": "answer job question"})
 
-        #act: call chatbot
+        # act: call chatbot
         print("[ACT] Calling chatbot...")
         answer = chat_with_bot(job_description, question)
         memory.append({"step": "act", "tool": "chatbot", "status": "success"})
 
-        #observe
-        print(f"[OBSERVE] Answer generated")
+        # observe
+        print("[OBSERVE] Answer generated")
         memory.append({"step": "observe", "content": "answer ready"})
 
-        #done
+        # done
         print("[DONE] Task complete!")
         return {
             "task": "chat",
