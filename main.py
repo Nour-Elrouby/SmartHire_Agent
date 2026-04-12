@@ -1,12 +1,32 @@
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Security, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security.api_key import APIKeyHeader
-from agent import run_agent
 import shutil
 import os
 import json
 import hmac
 import uuid
+import sys
+
+
+def configure_import_paths() -> None:
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    module_dirs = [
+        base_dir,
+        os.path.join(base_dir, "Agent"),
+        os.path.join(base_dir, "Scorer"),
+        os.path.join(base_dir, "Ranker"),
+        os.path.join(base_dir, "Chatbot")
+    ]
+
+    for module_dir in module_dirs:
+        if os.path.isdir(module_dir) and module_dir not in sys.path:
+            sys.path.insert(0, module_dir)
+
+
+configure_import_paths()
+
+from agent import run_agent
 
 def load_env_file(env_path: str = ".env") -> None:
     if not os.path.exists(env_path):
